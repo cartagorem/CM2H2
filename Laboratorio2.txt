@@ -1,0 +1,238 @@
+## ESTADISTICA DESCRIPTIVA
+
+# Mediana, moda, media por datos agrupados
+
+head(faithful)
+str(faithful)
+waiting <- faithful[,2]
+interv <-seq(from=40, to = 100, by = 5)
+Tespera <- cut(waiting, interv, right = FALSE)
+cbind(table(Tespera)) # convierte a columnas
+
+# 
+# Grafica de barras y circulares
+
+porcentaje <- c(26, 24, 16, 16, 8, 5,5)
+names(porcentaje) = c("Python", "R", "JS", "C","Perl","Java", "Bash")
+# circular
+mycolors=c("red","blue","green","orange", "brown", "yellow", "Gray")
+pie(porcentaje, col = mycolors)
+
+
+# barras
+barplot(porcentaje, col = mycolors, main = 
+          "Principales lenguajes de Programacion")
+
+# Grafico de lineas
+# install.packages("ggplot2")
+## Usando ggplot2() con geom_line()
+# Loading library
+library(ggplot2)
+Tiempo <- c(1,2,3,4,5,6,7)
+demanda <-c(8.3, 10.4, 19.0, 17.0, 15.8, 15.3, 19.8)
+# Create a data frame
+BID <- data.frame(Tiempo,demanda)
+
+# Create a scatterplot of x vs. y
+ggplot(BID, aes(x=Tiempo, y=demanda)) + geom_line() + geom_point()
+
+# Ejemplo con plot
+edades<- 18:29
+estatura<-c(166.0, 1.67,1.78, 1.58, 1.68, 1.80, 1.72, 1.75, 1.61, 
+            1.81, 1.63, 1.71 )
+
+personas <-data.frame(edades = edades, estatura=estatura)
+personas
+
+plot(estatura, type ="o", xlab = "edad", col = "blue",
+     main = "Estatura de personas de distintas edades (cm)")
+
+
+# Diagramas de dispersión
+set.seed(955) ##Generadora de numeros seudo aleatorios
+dat <- data.frame(xvar = 1:20 + rnorm(20, sd = 3),
+                  yvar = 1:20 + rnorm(20, sd = 3),
+                  zvar = 1:20 + rnorm(20, sd = 3))
+
+plot(yvar ~ xvar, dat)
+plot(dat$xvar, dat$zvar) # otra forma de colocar los ejes
+
+# usando ggplot2
+ggplot(dat, aes(x=xvar, y=yvar)) +
+  geom_point(shape=1) + # Usamos circulos huecos
+  #geom_smooth(method=lm) ## Agregamos la linea de regresion lineal
+  geom_smooth(method=lm, ## No mostramos la region de confianza
+            se=FALSE) # se = standart error
+
+
+# Histogramas
+set.seed(1234)
+Ejemplo <- rnorm(200)
+head(Ejemplo)
+#table(Ejemplo)
+#  produce un simple histograma de frecuencia
+hist(Ejemplo)
+#  el atributo break para producir histogramas agrupados a nuestro criterio.
+hist(Ejemplo, breaks = 5)
+# freq= FALSE se usa para la densidad de probabilidad en lugar en lugar 
+# de contar el número de puntos de datos por intervalos.
+hist(Ejemplo, freq = FALSE) # DENSIDAD
+
+
+# otro ejemplo
+set.seed(1234)
+dat <- data.frame(cond = factor(rep(c("A","B"), each=200)),
+                  rating = c(rnorm(200),rnorm(200, mean=.8)))
+table(dat)
+head(dat)
+ggplot(dat, aes(x=rating)) + geom_histogram(binwidth=.25,fill="red", 
+                                            colour="blue")
+
+# Grafico de cajas
+# mediana, primer cuartil, tercer cuartil , valor máximo y valor mínimo
+# nos permite observar si los datos estas sesgados
+# Generamos datos y producimos un data frame de 12 columnas.
+data<-data.frame(dat1=rnorm(100,mean=3,sd=2),
+                 dat2=rnorm(100,mean=4,sd=1),
+                 dat3=rnorm(100,mean=6,sd=0.5),
+                 dat4=rnorm(100,mean=10,sd=0.5),
+                 dat5=rnorm(100,mean=4,sd=2),
+                 dat6=rnorm(100,mean=4.5,sd=2),
+                 dat7=rnorm(100,mean=7,sd=0.5),
+                 dat8=rnorm(100,mean=8,sd=3),
+                 dat9=rnorm(100,mean=6,sd=0.5),
+                 dat10=rnorm(100,mean=5,sd=3),
+                 dat11=rnorm(100,mean=8,sd=0.2),
+                 dat12=rnorm(100,mean=4,sd=4))
+
+##Creamos el boxplot
+boxplot(data, las =2, at =c(1,2,3,4, 6,7,8,9, 11,12,13,14),
+        col = c("red","sienna","palevioletred1","royalblue2","red","sienna",
+                "palevioletred1", "royalblue2","red","sienna",
+                "palevioletred1","royalblue2"))
+
+
+
+# DISTRIBUCION NORMAL
+# vARIABLE ALEATORIA NORMAL: NORM
+# d : densidad f
+# p : acumulada F
+# q : inversa de F (cuartil)
+# r : muestra aleatoria (observaciones)
+
+dnorm(0)
+pnorm(0)
+qnorm(0.5)
+rnorm(10,mean = 0,sd=2)
+#rnorm(10)
+rnorm(10,0,2)
+
+x <- seq(-4,4,by=0.2)
+
+plot(x,dnorm(x,0,1.5))  # funcion de densidad
+plot(x,dnorm(x), type = "l")
+plot(x,pnorm(x))
+plot(x,pnorm(x), type = "l")
+
+y <- seq(0,1,by=0.01)
+plot(y,qnorm(y))
+plot(y,qnorm(y), type = "l")
+
+# Dado las v.a. normales Z ∼ N(0,1),X ∼ N(1,4) y Y ∼ N(µ,σ ^2)
+# ▶ Determinar P(|Z| ≤ 1) y P(|Z| ≤ 2).
+# ▶ Determinar P(|X − 1| ≤ 2) y P(|X − 1| ≤ 4).
+# ▶ Determinar P(|Y − µ| ≤ σ) y P(|Y − µ| ≤ 2σ)
+
+# Como P(|Z|<= 1) = P(Z<=1)-P(Z<-1) 
+pnorm(1)-pnorm(-1) # 0.6826895
+
+# Como P(|X-1|<= 2) = P(X<=3)-P(X<-1)
+pnorm(3,1,2) - pnorm(-1,1,2) # 0.6826895
+
+# Graficar la función de densidad de una v.a. chi-cuadrada en R con
+# 5 grados de libertad.
+x <- seq(0,20,length=50);
+y <- dchisq(x,5)
+plot(x,y,type = "l", col = "blue")
+
+# Dados X1 ,...,X7 son v.a. independientes normales con media 0 y
+# varianza 1. Determinar b de tal manera que:
+# P(Σ_1^7 Xi^2 ≤ b)  = 0.95
+
+# b es el cuantil de una v.a chi cuadrada de 7 grados de libertad.
+b <- qchisq(0.95,7) # 14.06714
+
+# Dada una maquina embotelladora que vierte líquido con un volumen que sigue
+# una distribución normal con σ^2. Se selecciona una muestra de 10 botellas y 
+# se mide el volumen dentro de cada uno. Con estos resultados deseamos determinar
+# un intervalo en el cual se encuentre S^2 con alta probabilidad (0.90).
+# Es decir: Determine a1 y a2 tal que: P(a1 ≤ S^2 ≤ a2 ) = 0.90 = 1-alpha
+# σ^2 = 4.
+
+alpha <- 0.10 
+n <- 10 # tamaño de la muestra
+a1 <- qchisq(alpha/2,n-1)*4/(n-1) # 1.477828
+a2 <- qchisq(1-alpha/2,n-1)*4/(n-1) # 7.519546
+
+c(a1,a2) # intervalo de confianza [3.325113; 16.918978]
+
+
+
+# Teorema de limite central
+
+# X poblacion de tipo Be(p)
+
+# X1, X2, ..., Xn de tamaño n
+
+# n_obs numero de observaciones realizadas de la muestra
+n_obs <- 10000
+n <- 100
+p <- 0.7
+
+# simulacion de la media muestral: aproximación de la densidad
+# con la frecuencia relativa
+media_muestral <- rbinom(n_obs, n, p )/n
+
+# Estandarizacion de la media muestral (Zn)
+
+Zn <- ( (media_muestral-p)/sqrt(p*(1-p)) )*sqrt(n)
+
+H <- hist(Zn,freq = FALSE,breaks = 50)
+
+# plot(H$mids, dnorm(H$mids)) # Funcion de densidad exacta de Z en la 
+# lista de puntos
+plot(H$mids, dnorm(H$mids), type = "l", col = "red") # exacto
+lines(density(Zn), col = "blue") # aproximada
+
+# Distribucion acumulada
+plot(H$mids, pnorm(H$mids), type = "l", col = "red")
+lines(ecdf(Zn), col = "blue")
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
