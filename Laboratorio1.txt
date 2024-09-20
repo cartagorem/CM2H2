@@ -1,0 +1,214 @@
+# calculadora:
+
+3+3
+5-3
+5%%3 # división entera
+5*2 # producto
+5^2 # potencia
+5**2 # potencia
+sqrt(25) # raiz cuadrada
+factorial(4) # n! = n(n-1)...3*2*1
+choose(5,2) # 4!/(2!3!)  combinatorio / coeficiente binomial
+
+# Estructuras de datos
+# indide de masa corporal (IMC)  :  peso/talla^2
+pesos <- c(60,65,70,80,67) # concatenar
+pesos <- pesos+1
+tallas <- c(1.70,1.80,1.60,1.65,1.66)
+length(tallas)
+
+IMC <- pesos/tallas^2
+
+
+# simulacion de montecarlo
+# ley de los grandes numeros
+
+# Aplicación usando controles de flujo y operaciones vectorizadas
+# Hay k = 10 personas en un cuarto. Supongamos que el cumpleaños de
+# cada persona es independiente e igualmente probable en los 365 días del
+# año. ¿Cuál es la probabilidad de que al menos haya un par de personas que
+# compartan el mismo cumpleaños?
+
+# Hallamos la probabilidad:
+# y<-c(1,2,3) sum(y) 
+E<-356:365
+prod(E)  # multiplica todas las componente
+
+# la probabilidad pedida es
+1-prod(E)/365^{10} # = 0.1169482
+
+
+# población
+set.seed(4)
+X <- 1:365
+#Y <- sample(X,1000) # muestreo sin reemplazamiento
+#Y <- sample(X,1000, replace = T) # muestreo con reemplazamiento
+Y <- sample(X,10,replace = T) # seudoaleatorio
+
+# las frecuencias relativas de repetir el experimento muchas veces
+# sera una aproximacion de la probabilidad real
+
+
+# repetir el experimento muchas veces
+N <- 100
+
+# las frecuencias de los cumpleaños en la lista de 10
+table(Y) # vector de frecuencias absolutas
+table(Y)>1 # vector booleano
+# ¿habra algun valor verdadero?
+any(table(Y)>1) # variable booleana
+
+# aproximación de la probabilidad exacta es la frecuencia relativa
+# de sucesos favorables
+
+# casos favorables / casos totales
+
+# como se requiere reproducir los mismos resultados
+# se fija una semilla (seed)
+# caso no vectorizado
+set.seed(42)
+X <- 1:365
+N <- 1000000  # numero de veces que se repite el experimento
+count <- 0
+for(i in 1:N){
+  Y <- sample(X,10,replace = T)
+  coinciden <- any(table(Y)>1) 
+  if(coinciden){
+    count <- count+1
+  }
+}
+count/N # frecuencia relativa
+
+
+# Probabilidad exacta:
+0.1169482
+
+Resultados    
+# N               Prob
+# 100             0.13 
+# 1000            0.131
+# 10000           0.1154
+# 100000          0.11784
+# 1000000
+
+
+# Código en R semi-vectorizado
+set.seed(42)
+N <- 100 # tamaño de la muestra
+y <- rep(0,N)
+for (i in 1:N){
+  x <- sample(1:365,10,replace=TRUE)
+  y[i] <- any(table(x)>1)   # los valores booleanos 1: TRUE  0: FALSE
+}
+sum(y)/N
+
+# Código en R Totalmente vectorizado
+set.seed(42)
+N<-1000 # tamaño de la muestra
+x <- replicate(N,any(table(sample(365,10,replace=T))>1))
+sum(x)/N
+
+
+
+# BASE DE DATOS
+# Ejemplo con Iris data
+
+iris <- read.csv("iris.csv")
+str(iris)
+
+# FUNCIONES
+# https://tecdigital.tec.ac.cr/servicios/revistamatematica/Libros/
+# WMora_MetodosNumericos/2017_Principal_MetodosNumericos-con-R.pdf
+# Encontremos las raices de la ecuacion cuadratica
+cuadratica <- function(coef){
+  a <- coef[1]
+  b <- coef[2]
+  c <- coef[3]
+  d <- (b^2 - (4*a*c))
+  cat("El discriminante es : ", d, "\n")
+  if (d < 0) cat ("No hay raices reales!", "\n")
+  if (d >=0){
+    r1 <- (-b - sqrt(d))/(2*a)
+    r2 <- (-b + sqrt(d))/(2*a)
+    cat("La raiz 1 es", r1, "\n")
+    cat("La raiz 2 es", r2, "\n")
+  }
+}
+
+abc <- scan()
+
+
+
+# LEY DE LOS GRANDES NUMEROS
+
+N <- 200 # Tamaño de la muestra
+# poblacion uniforme (0,1)
+
+x1 <- runif(N) # UNA v. a. con distribucion uniforme en (0,1), su media sera 0.5
+# rnorm(N)
+
+x1_raya <- cumsum(x1)/(1:N)
+# cumsum: suma acumulativa (primera obs, primera + segunda, etc)
+# entonces, x1_raya es la sucesion de realizaciones de las medias muestrales 
+# (aumentando la cantidad de observaciones)
+
+plot(1:N, x1_raya, ylim=c(0,1), type='l')
+
+
+# LGN: teorema de convergencia en distribución a un caso degenerado
+vas <- 30
+
+x_sucesion = matrix(ncol = N, nrow = vas)
+x_raya_sucesión = matrix(ncol = N, nrow = vas)
+
+# sucesion de MUCHAS v.a.
+for(i in 1:vas){
+  x <- runif(N)
+  x_raya <- cumsum(x)/(1:N)
+  if(i<2) {plot(1:N, x_raya, ylim=c(0,1), type = 'l')}
+  else {lines(1:N, x_raya)}
+  x_sucesion[i,] = x
+  x_raya_sucesión[i,] = x_raya
+}
+
+
+# Cuando empezamos la varianza es grande, pero a medida que aumentamos n implota
+# (la esperanza se mantiene constante)
+
+# VAYAMOS CAMBIANDO LOS PARAMETROS
+lgn <- function(distrib,vas){ # automatizado en una funcion, pero sino probar cambiarlos arriba a mano)
+  x <- distrib
+  N <- length(x)
+  x_raya <- cumsum(x)/(1:N)
+  plot(1:N, x_raya, ylim=c(0,1), type = 'l')
+  for(j in 1:vas){
+    x <- runif(N)
+    x_raya <- cumsum(x)/(1:N)
+    if(j<2){plot(1:N, x_raya, ylim=c(0,1), type = 'l')}
+    else{lines(1:N, x_raya, type = 'l')}
+  }
+}
+
+lgn(runif(200),30)
+
+lgn(rnorm(200),30)
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
